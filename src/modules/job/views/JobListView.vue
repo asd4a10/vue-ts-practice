@@ -1,19 +1,33 @@
 <script setup lang="ts">
-import { PropType } from "vue";
+import { computed, PropType } from "vue";
 import Job from "@/types/job.ts";
+import OrderTerm from "@/types/OrderTerm.ts";
 
 const props = defineProps({
   jobs: {
     type: Array as PropType<Job[]>,
     default: [],
   },
+  order: {
+    type: String as PropType<OrderTerm>,
+    required: true,
+  },
+});
+
+const orderedJobs = computed(() => {
+  return [
+    ...props.jobs?.sort((a: Job, b: Job) => {
+      return a[props.order] <= b[props.order] ? -1 : 1;
+    }),
+  ];
 });
 </script>
 
 <template>
   <div class="job-list">
+    <p align="right">Ordered by {{ order }}</p>
     <ul>
-      <li v-for="job in jobs" :key="job.id">
+      <li v-for="job in orderedJobs" :key="job.id">
         <h2>{{ job.title }} in {{ job.location }}</h2>
         <div class="salary">
           <p>{{ job.salary }} tenge</p>
